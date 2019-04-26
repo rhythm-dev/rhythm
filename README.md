@@ -6,10 +6,10 @@ Data Structures and Algorithms implemented in Reason
 
 # Contributing
 
-First install `esy` (use 0.4.3 or later for correct lock format)
+First install `esy`
 
 ```
-npm install -g esy@0.4.3
+npm install -g esy
 ```
 
 Install (once, and when package.json changes)
