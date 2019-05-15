@@ -32,30 +32,42 @@ module type Interface = {
 
   let every: ('el => bool, tSequence('el)) => bool;
   let everyi: ((int, 'el) => bool, tSequence('el)) => bool;
+
   let forEach: ('el => unit, tSequence('el)) => unit;
   let forEachi: ((int, 'el) => unit, tSequence('el)) => unit;
+
   let none: ('el => bool, tSequence('el)) => bool;
   let nonei: ((int, 'el) => bool, tSequence('el)) => bool;
+
   let some: ('el => bool, tSequence('el)) => bool;
   let somei: ((int, 'el) => bool, tSequence('el)) => bool;
 
   let filterDrop: ('el => bool, tSequence('el)) => tSequence('el);
   let filterDropi: ((int, 'el) => bool, tSequence('el)) => tSequence('el);
+
   let filterKeep: ('el => bool, tSequence('el)) => tSequence('el);
   let filterKeepi: ((int, 'el) => bool, tSequence('el)) => tSequence('el);
+
   let map: ('a => 'b, tSequence('a)) => tSequence('b);
   let mapi: ((int, 'a) => 'b, tSequence('a)) => tSequence('b);
+
+  /* let map2Exn: (('a, 'b) => 'c, tSequence('a), tSequence('b)) => tSequence('c); */
+  /* let map2iExn: (('a, 'b) => 'c, tSequence('a), tSequence('b)) => tSequence('c); */
+
   let reverse: tSequence('el) => tSequence('el);
+
   let reduce: (('acc, 'el) => 'acc, 'acc, tSequence('el)) => 'acc;
   let reducei: (('acc, int, 'el) => 'acc, 'acc, tSequence('el)) => 'acc;
+
   let reduceReverse: (('acc, 'el) => 'acc, 'acc, tSequence('el)) => 'acc;
   let reduceReversei:
     (('acc, int, 'el) => 'acc, 'acc, tSequence('el)) => 'acc;
 
   let flatten: tSequence(tSequence('el)) => tSequence('el);
+  let flattenArray: array(tSequence('el)) => tSequence('el);
+  let flattenList: list(tSequence('el)) => tSequence('el);
+
   let concat: (tSequence('el), tSequence('el)) => tSequence('el);
-  let concatArray: array(tSequence('el)) => tSequence('el);
-  let concatList: list(tSequence('el)) => tSequence('el);
 };
 
 module Add =
@@ -217,7 +229,7 @@ module Add =
 
   let filterDrop = (fn, ds) => filterDropi((i, el) => fn(el), ds);
 
-  let concatArray = dsArray => {
+  let flattenArray = dsArray => {
     let arr1D = dsArray;
     let arr2D = Caml.Array.map(toCamlArray, arr1D);
     let lengths = Caml.Array.map(Caml.Array.length, arr2D);
@@ -240,9 +252,9 @@ module Add =
     fromCamlArray(fullArray);
   };
 
-  let concatList = dsList => dsList |> Caml.Array.of_list |> concatArray;
+  let flattenList = dsList => dsList |> Caml.Array.of_list |> flattenArray;
 
-  let flatten = ds2D => ds2D |> toCamlList |> concatList;
+  let flatten = ds2D => ds2D |> toCamlList |> flattenList;
 
-  let concat = (ds1, ds2) => concatList([ds1, ds2]);
+  let concat = (ds1, ds2) => flattenList([ds1, ds2]);
 };
