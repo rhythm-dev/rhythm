@@ -34,16 +34,17 @@ let map = (f, o) =>
   | None => None
   };
 
-let mapExn = (f, o) =>
-  switch (o) {
-  | Some(value) => f(value)
-  | None => raise(Exceptions.UnexpectedNone("Option.getValueExn"))
+let map2 = (f, o1, o2) =>
+  switch (o1, o2) {
+  | (Some(value1), Some(value2)) => Some(f(value1, value2))
+  | _ => None
   };
 
-let mapWithDefault = (default, f, o) =>
-  switch (o) {
-  | Some(value) => f(value)
-  | None => default
+let map3 = (f, o1, o2, o3) =>
+  switch (o1, o2, o3) {
+  | (Some(value1), Some(value2), Some(value3)) =>
+    Some(f(value1, value2, value3))
+  | _ => None
   };
 
 let flatMap = (f, o) =>

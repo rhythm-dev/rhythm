@@ -8,8 +8,8 @@ let isSome: t('value) => bool;
 let makeNone: _ => t('value);
 let makeSome: 'value => t('value);
 let map: ('a => 'b, t('a)) => t('b);
-let mapExn: ('a => 'b, t('a)) => 'b;
-let mapWithDefault: ('b, 'a => 'b, t('a)) => 'b;
+let map2: (('a, 'b) => 'c, t('a), t('b)) => t('c)
+let map3: (('a, 'b, 'c) => 'd, t('a), t('b), t('c)) => t('d)
 
 module Infix: {
   let (|?:): (option('value), 'value) => 'value;
