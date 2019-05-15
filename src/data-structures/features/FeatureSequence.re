@@ -48,6 +48,10 @@ module type Interface = {
   let filterKeep: ('el => bool, tSequence('el)) => tSequence('el);
   let filterKeepi: ((int, 'el) => bool, tSequence('el)) => tSequence('el);
 
+  let filterNone: tSequence(option('el)) => tSequence('el);
+  let filterError: tSequence(result('el, _)) => tSequence('el);
+  let filterOk: tSequence(result(_, 'err)) => tSequence('err);
+
   let map: ('a => 'b, tSequence('a)) => tSequence('b);
   let mapi: ((int, 'a) => 'b, tSequence('a)) => tSequence('b);
 
@@ -228,6 +232,54 @@ module Add =
   let filterDropi = (fn, ds) => filterKeepi((i, el) => !fn(i, el), ds);
 
   let filterDrop = (fn, ds) => filterDropi((i, el) => fn(el), ds);
+
+  let filterNone = ds =>
+    ds
+    |> filterKeep(el =>
+         switch (el) {
+         | Some(_) => true
+         | None => false
+         }
+       )
+    |> map(el =>
+         switch (el) {
+         | Some(value) => value
+         | None =>
+           raise(Exceptions.InternalError("FeatureSequence.filterNone"))
+         }
+       );
+
+  let filterError = ds =>
+    ds
+    |> filterKeep(el =>
+         switch (el) {
+         | Ok(_) => true
+         | Error(_) => false
+         }
+       )
+    |> map(el =>
+         switch (el) {
+         | Ok(value) => value
+         | Error(_) =>
+           raise(Exceptions.InternalError("FeatureSequence.filterError"))
+         }
+       );
+
+  let filterOk = ds =>
+    ds
+    |> filterKeep(el =>
+         switch (el) {
+         | Ok(_) => false
+         | Error(_) => true
+         }
+       )
+    |> map(el =>
+         switch (el) {
+         | Error(value) => value
+         | Ok(value) =>
+           raise(Exceptions.InternalError("FeatureSequence.filterOk"))
+         }
+       );
 
   let flattenArray = dsArray => {
     let arr1D = dsArray;
